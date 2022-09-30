@@ -1,0 +1,27 @@
+name: Generate lockfile
+on:
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Generate lockfile
+        id: lockfile
+        run: |
+          touch hello.txt
+          if [ $(git status --porcelain | wc -l) -eq "0" ]; then
+            echo "::set-output name=changed::false"
+          else
+            echo "::set-output name=changed::true"
+          fi
+
+      - name: I should be ran
+        if: steps.lockfile.outputs.changed == 'true'
+        run: echo "I was run :)"
+
+      - name: I should be skipped
+        if: steps.lockfile.outputs.changed == 'false'
+        run: echo "I was run :("
